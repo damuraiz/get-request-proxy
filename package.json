@@ -2,9 +2,9 @@
   "name": "get-request-proxy",
   "version": "1.0.0",
   "description": "",
-  "main": "test.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node test.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
