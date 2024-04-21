@@ -6,6 +6,12 @@ const app = express();
 
 app.use(express.json());
 
+const c = Buffer.from(process.env.CERT_BASE, 'base64');
+const k = Buffer.from(process.env.CERT_KEY, 'base64');
+
+fs.writeFileSync('key.pem', k);
+fs.writeFileSync('cert.pem', c);
+
 const httpsOptions = {
   cert: fs.readFileSync('cert.pem'),
   key: fs.readFileSync('key.pem')
