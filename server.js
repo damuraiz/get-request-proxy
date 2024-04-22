@@ -21,15 +21,11 @@ app.get('*', async (req, res) => {
     }
 	console.log(targetUrl);
 	try {
-
+		console.log(req.method);
 		const response = await axios({
 		      method: req.method,
 		      url: targetUrl,
-		      data: req.body,
 		      headers: { ...req.headers, host: new URL(targetUrl).hostname },
-		      httpsAgent: new https.Agent({
-		        rejectUnauthorized: false // Указывается для разработки, в продакшене должно быть true
-		      }),
 		      responseType: 'arraybuffer' // сохраняем бинарный ответ, если это изображение или другой бинарный контент
 		    });
 
