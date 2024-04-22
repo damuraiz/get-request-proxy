@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-
+const https = require('https');
 
 const app = express();
 
@@ -14,18 +14,32 @@ app.get('*', async (req, res) => {
 	
     let targetUrl;
     // Проверка расширения запрашиваемого файла
-    if (/\.(jpg|jpeg|png|svg)$/i.test(req.path)) {
-      targetUrl = STATIC_BASE_URL + req.originalUrl;
+    if (/\.(jpg|jpeg|png|svg|ico)$/i.test(req.path)) {
+		targetUrl = STATIC_BASE_URL + req.originalUrl;
     } else {
-      targetUrl = API_BASE_URL + req.originalUrl;
+      	targetUrl = API_BASE_URL + req.originalUrl;
     }
 	console.log(targetUrl);
- 	//const targetUrl = 'https://api.themoviedb.org' + req.originalUrl;
 	try {
-    	const response = await axios.get(targetUrl);
-    	console.log('Data:', response.data);
-		res.status(response.status).send(response.data);
-    
+
+		const response = await axios({
+		      method: req.method,
+		      url: targetUrl,
+		      data: req.body,
+		      headers: { ...req.headers, host: new URL(targetUrl).hostname },
+		      httpsAgent: new https.Agent({
+		        rejectUnauthorized: false // Указывается для разработки, в продакшене должно быть true
+		      }),
+		      responseType: 'arraybuffer' // сохраняем бинарный ответ, если это изображение или другой бинарный контент
+		    });
+
+		    // Транслируем хедеры ответа
+		    res.set(response.headers);
+
+		    // Отправляем статус и данные ответа
+		    res.status(response.status).send(response.data);
+
+      
   	} catch (error) {
     	console.log('Error status:', error.response?.status);
     	console.log('Error data:', error.response?.data);
